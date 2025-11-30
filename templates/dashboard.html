@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="grid">
+    <div class="card">
+        <h2>User Profile</h2>
+        <p><strong>User ID:</strong> {{ user_id }}</p>
+        <p><strong>Name:</strong> {{ user.name }}</p>
+        <p><strong>Default Units:</strong> {{ user.default_units }}</p>
+
+        <form method="post" action="{{ url_for('set_units') }}" class="inline-form">
+            <label>
+                Change Units:
+                <select name="default_units">
+                    <option value="metric" {% if user.default_units == 'metric' %}selected{% endif %}>Metric (°C)</option>
+                    <option value="imperial" {% if user.default_units == 'imperial' %}selected{% endif %}>Imperial (°F)</option>
+                </select>
+            </label>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Add Location</h2>
+        <form method="post" action="{{ url_for('add_location_route') }}" class="form-grid">
+            <label>
+                City
+                <input type="text" name="city" required placeholder="e.g., Boise">
+            </label>
+
+            <label>
+                Country Code
+                <input type="text" name="country_code" required placeholder="e.g., US">
+            </label>
+
+            <label>
+                Nickname
+                <input type="text" name="nickname" required placeholder="e.g., Home">
+            </label>
+
+            <div class="form-actions">
+                <button type="submit">Add Location</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Saved Locations</h2>
+    {% if locations %}
+        <table class="locations-table">
+            <thead>
+                <tr>
+                    <th>Nickname</th>
+                    <th>City</th>
+                    <th>Country</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for loc in locations %}
+                <tr>
+                    <td>{{ loc.nickname }}</td>
+                    <td>{{ loc.city }}</td>
+                    <td>{{ loc.country_code }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('dashboard', loc=loc.id) }}" class="btn-link">View Weather</a>
+
+                        <form method="post"
+                              action="{{ url_for('delete_location_route', loc_id=loc.id) }}"
+                              class="inline-form"
+                              onsubmit="return confirm('Delete this location?');">
+                            <button type="submit" class="danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No locations saved yet. Add one using the form above.</p>
+    {% endif %}
+</section>
+
+{% if weather %}
+<section class="card">
+    <h2>Current Weather</h2>
+
+    {% if weather.error %}
+        <p>{{ weather.error }}</p>
+    {% else %}
+        <p><strong>Location:</strong> {{ weather.city }}, {{ weather.country }}</p>
+        <p><strong>Temperature:</strong> {{ weather.temp }} (feels like {{ weather.feels_like }})</p>
+        <p><strong>Description:</strong> {{ weather.description }}</p>
+        <p><strong>Units:</strong> {{ weather.units }}</p>
+        <p><small>Retrieved at: {{ weather.timestamp }}</small></p>
+    {% endif %}
+</section>
+{% endif %}
+{% endblock %}

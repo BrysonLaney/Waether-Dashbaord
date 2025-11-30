@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card">
+    <h2>Sign In or Create a Profile</h2>
+    <p>Enter a user ID to continue. If it doesn't exist yet, a new profile will be created.</p>
+
+    <form method="post" action="{{ url_for('index') }}" class="form-grid">
+        <label>
+            User ID
+            <input type="text" name="user_id" required placeholder="e.g., bryson@example.com">
+        </label>
+
+        <label>
+            Name (for new profiles)
+            <input type="text" name="name" placeholder="Only needed if creating a new user">
+        </label>
+
+        <label>
+            Default Units
+            <select name="default_units">
+                <option value="metric">Metric (°C)</option>
+                <option value="imperial">Imperial (°F)</option>
+            </select>
+        </label>
+
+        <div class="form-actions">
+            <button type="submit">Continue</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
